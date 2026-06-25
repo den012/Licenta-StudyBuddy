@@ -10,6 +10,8 @@ router.post(
   checkJoi(
     Joi.object({
       accessToken: Joi.string().required(),
+
+        //check joi
     }),
   ),
   async (req, res) => {
