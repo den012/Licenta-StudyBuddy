@@ -1,0 +1,3 @@
+set -e
+cd client-api
+npm test

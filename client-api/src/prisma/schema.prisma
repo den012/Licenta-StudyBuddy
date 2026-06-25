@@ -1,0 +1,86 @@
+datasource db {
+  provider = "mysql"
+}
+generator client {
+  output   = "generated"
+  provider = "prisma-client"
+}
+
+model User {
+  id        Int       @default(autoincrement()) @id
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  authId String @unique
+
+  avatar String?
+  bio    String?
+  name   String?
+  yob    Int?
+
+  xDmReceiver          Dm[] @relation("DmReceiverUser")
+  xDmUser              Dm[] @relation("DmUser")
+  xUserSkill           UserSkill[]
+  xUserSwipeSwipedUser UserSwipe[] @relation("UserSwipeSwipedUser")
+  xUserSwipeUser       UserSwipe[] @relation("UserSwipeUser")
+}
+
+model Skill {
+  id        Int       @default(autoincrement()) @id
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  title String @unique
+
+  xUser UserSkill[]
+}
+
+model UserSkill {
+  id        Int       @default(autoincrement()) @id
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  skillId Int
+  type    UserSkillType
+  userId  Int
+
+  skill Skill @relation(fields: [skillId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+}
+
+enum UserSkillType {
+  KNOW
+  WANT_TO_LEARN
+}
+
+model UserSwipe {
+  id        Int       @default(autoincrement()) @id
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  seenAt       DateTime?
+  swipedUserId Int
+  type         UserSwipeType
+  userId       Int
+
+  swipedUser User @relation("UserSwipeSwipedUser", fields: [swipedUserId], references: [id])
+  user       User @relation("UserSwipeUser", fields: [userId], references: [id])
+}
+
+enum UserSwipeType {
+  LIKE
+  SKIP
+}
+
+model Dm {
+  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  deletedAt DateTime?
+
+  message        String
+  receiverUserId Int
+  userId         Int
+
+  receiver User @relation("DmReceiverUser", fields: [receiverUserId], references: [id])
+  user     User @relation("DmUser", fields: [userId], references: [id])
+}
